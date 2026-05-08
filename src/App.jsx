@@ -151,14 +151,14 @@ const makeCSS = (G, settings) => `
   .toggle input:checked + .toggle-slider::before{transform:translateX(20px);background:#fff;}
 
   /* ── MOBILE ── */
-  .mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:${G.surface}f0;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid ${G.border};padding:6px 0 max(6px,env(safe-area-inset-bottom));}
-  .mobile-header{display:none;position:fixed;top:0;left:0;right:0;z-index:100;background:${G.surface}f0;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid ${G.border};padding:10px 16px;align-items:center;justify-content:space-between;}
+  .mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:${G.surface}f8;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid ${G.border};padding:4px 0 max(8px,env(safe-area-inset-bottom));}
+  .mobile-header{display:none;position:fixed;top:0;left:0;right:0;z-index:200;background:${G.surface}f8;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid ${G.border};padding:10px 14px;align-items:center;justify-content:space-between;min-height:58px;}
 
   @media(max-width:768px){
     .desktop-sidebar{display:none!important;}
     .mobile-bottom-nav{display:flex!important;}
     .mobile-header{display:flex!important;}
-    .main-wrap{margin-left:0!important;max-width:100vw!important;padding:70px 14px 90px!important;}
+    .main-wrap{margin-left:0!important;max-width:100vw!important;padding:72px 13px 88px!important;}
     .stat-row{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;}
     .two-col{grid-template-columns:1fr!important;}
     .emp-grid{grid-template-columns:1fr!important;}
@@ -1511,17 +1511,88 @@ function Layout({ user, onLogout }) {
         </div>
       )}
 
-      {/* ── MOBILE HEADER ── */}
+      {/* ── MOBILE HEADER (Instagram Style) ── */}
       <div className="mobile-header">
-        <div className="g-text" style={{ fontFamily: G.font, fontSize: 16, fontWeight: 900 }}>OnboardIQ</div>
-        <div style={{ display: "flex", gap: 7 }}>
-          <button onClick={() => setShowSearch(true)} style={{ background: `${G.primary}15`, border: `1px solid ${G.primary}33`, color: G.primary, borderRadius: 8, width: 36, height: 36, cursor: "pointer", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>🔍</button>
-          <button onClick={() => setShowNotifs(true)} style={{ background: `${G.primary}15`, border: `1px solid ${G.primary}33`, color: G.primary, borderRadius: 8, width: 36, height: 36, cursor: "pointer", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+        {/* Left — Logo */}
+        <div className="g-text" style={{ fontFamily: G.font, fontSize: 17, fontWeight: 900, letterSpacing: 2 }}>
+          ⚡ OnboardIQ
+        </div>
+
+        {/* Right — Actions */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+
+          {/* Search */}
+          <button onClick={() => setShowSearch(true)}
+            style={{ background: `${G.primary}15`, border: `1px solid ${G.primary}33`, color: G.primary, borderRadius: 10, width: 38, height: 38, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            🔍
+          </button>
+
+          {/* Notifications */}
+          <button onClick={() => setShowNotifs(true)}
+            style={{ background: `${G.primary}15`, border: `1px solid ${G.primary}33`, color: G.primary, borderRadius: 10, width: 38, height: 38, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
             🔔
-            {unread > 0 && <span style={{ position: "absolute", top: -3, right: -3, background: G.red, color: "#fff", borderRadius: "50%", width: 14, height: 14, fontSize: 8, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: G.font, fontWeight: 900 }}>{unread > 9 ? "9+" : unread}</span>}
+            {unread > 0 && (
+              <span style={{ position: "absolute", top: -4, right: -4, background: G.red, color: "#fff", borderRadius: "50%", width: 16, height: 16, fontSize: 8, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: G.font, fontWeight: 900, border: `2px solid ${G.surface}` }}>
+                {unread > 9 ? "9+" : unread}
+              </span>
+            )}
+          </button>
+
+          {/* Avatar + Name popup toggle */}
+          <button onClick={() => setMobileMenuOpen(p => !p)}
+            style={{ background: `${G.primary}15`, border: `1px solid ${G.primary}33`, borderRadius: 10, width: 38, height: 38, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, overflow: "hidden" }}>
+            <Avt name={user.name || "U"} size={38} G={G} />
+          </button>
+
+          {/* Logout */}
+          <button onClick={onLogout}
+            style={{ background: `${G.red}15`, border: `1px solid ${G.red}33`, color: G.red, borderRadius: 10, width: 38, height: 38, cursor: "pointer", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            ⏻
           </button>
         </div>
       </div>
+
+      {/* ── MOBILE PROFILE DROPDOWN ── */}
+      {mobileMenuOpen && (
+        <div style={{ position: "fixed", top: 62, right: 12, zIndex: 300, background: G.surface, border: `1px solid ${G.border}`, borderRadius: 14, padding: 14, minWidth: 200, animation: "fadeUp 0.25s ease", boxShadow: `0 8px 32px rgba(0,0,0,0.5)` }}>
+          {/* User Info */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, paddingBottom: 12, marginBottom: 10, borderBottom: `1px solid ${G.border}` }}>
+            <Avt name={user.name || "U"} size={40} G={G} />
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 13 }}>{user.name}</div>
+              <div style={{ color: G.muted, fontSize: 11 }}>{user.email}</div>
+              <div style={{ marginTop: 3 }}><Bdg label={user.role} color={G.primary} /></div>
+            </div>
+          </div>
+
+          {/* Quick Nav Links */}
+          {[
+            { icon: "⚙️", label: "Settings", action: "settings" },
+            { icon: "📊", label: "Analytics", action: "analytics" },
+            { icon: "📄", label: "Reports", action: "reports" },
+          ].map((item, i) => (
+            <button key={i} onClick={() => { setPage(item.action); setMobileMenuOpen(false); playSound('click', sound); }}
+              style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "9px 8px", background: "transparent", border: "none", borderRadius: 8, cursor: "pointer", color: G.text, fontSize: 13, fontFamily: G.body, fontWeight: 500, transition: "all 0.2s", textAlign: "left" }}
+              onTouchStart={e => e.currentTarget.style.background = `${G.primary}11`}
+              onTouchEnd={e => e.currentTarget.style.background = "transparent"}>
+              <span style={{ fontSize: 17 }}>{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          ))}
+
+          {/* Logout */}
+          <button onClick={onLogout}
+            style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "9px 8px", background: `${G.red}11`, border: `1px solid ${G.red}22`, borderRadius: 8, cursor: "pointer", color: G.red, fontSize: 13, fontFamily: G.body, fontWeight: 600, marginTop: 8, transition: "all 0.2s" }}>
+            <span style={{ fontSize: 17 }}>⏻</span>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      )}
+
+      {/* Close dropdown on outside tap */}
+      {mobileMenuOpen && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 299 }} onClick={() => setMobileMenuOpen(false)} />
+      )}
 
       {/* ── DESKTOP SIDEBAR ── */}
       <div className="desktop-sidebar" style={{ width: settings.compactMode ? 180 : 200, background: G.surface, borderRight: `1px solid ${G.border}`, display: "flex", flexDirection: "column", position: "fixed", top: 0, bottom: 0, left: 0, zIndex: 100, transition: "all 0.4s ease" }}>
@@ -1597,14 +1668,32 @@ function Layout({ user, onLogout }) {
         )}
       </div>
 
-      {/* ── MOBILE BOTTOM NAV ── */}
+      {/* ── MOBILE BOTTOM NAV (Instagram Style) ── */}
       <div className="mobile-bottom-nav" style={{ justifyContent: "space-around", alignItems: "center" }}>
-        {[...navItems.slice(0, 4), { key: "settings", label: "MORE", icon: "⚙️" }].map(item => (
-          <button key={item.key} onClick={() => { setPage(item.key); playSound('click', sound); }}
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, padding: "5px 8px", background: "transparent", border: "none", color: page === item.key ? G.primary : G.muted, transition: "all 0.2s", cursor: "pointer", minWidth: 48, minHeight: 48, justifyContent: "center" }}>
-            <span style={{ fontSize: 21 }}>{item.icon}</span>
-            <span style={{ fontSize: 8, fontFamily: G.font, fontWeight: page === item.key ? 700 : 400, letterSpacing: 0.5 }}>{item.label}</span>
-            {page === item.key && <div style={{ width: 4, height: 4, borderRadius: "50%", background: G.primary, boxShadow: `0 0 5px ${G.primary}` }} />}
+        {[
+          { key: "dashboard", label: "Home", icon: "🏠" },
+          { key: "employees", label: "Agents", icon: "👥" },
+          { key: "tasks", label: "Tasks", icon: "📋" },
+          { key: "leaderboard", label: "Ranks", icon: "🏆" },
+          { key: "settings", label: "Settings", icon: "⚙️" },
+        ].map(item => (
+          <button key={item.key} onClick={() => { setPage(item.key); playSound('click', sound); setMobileMenuOpen(false); }}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "4px 8px", background: "transparent", border: "none", color: page === item.key ? G.primary : G.muted, transition: "all 0.2s ease", cursor: "pointer", minWidth: 52, minHeight: 52, justifyContent: "center", position: "relative" }}>
+
+            {/* Active indicator dot on top */}
+            {page === item.key && (
+              <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 20, height: 2, borderRadius: 2, background: G.primary, boxShadow: `0 0 6px ${G.primary}` }} />
+            )}
+
+            {/* Icon */}
+            <div style={{ fontSize: page === item.key ? 23 : 21, transition: "all 0.2s ease", transform: page === item.key ? "scale(1.15)" : "scale(1)" }}>
+              {item.icon}
+            </div>
+
+            {/* Label */}
+            <span style={{ fontSize: 9, fontFamily: G.font, fontWeight: page === item.key ? 700 : 400, letterSpacing: 0.5, color: page === item.key ? G.primary : G.muted, transition: "all 0.2s" }}>
+              {item.label}
+            </span>
           </button>
         ))}
       </div>
